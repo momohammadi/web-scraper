@@ -75,7 +75,7 @@ def write_non_matching_report(non_matching_report_filename, non_matching_urls):
         print(f"Error writing non-matching report: {e}")
 
 async def main():
-    input_filename = 'list_links.txt'  # File containing URLs, one per line
+    input_filename = 'sources/list_links.txt'  # File containing URLs, one per line
     success_report_filename = 'reports/success_report.csv'  # File to write success report in CSV format
     error_report_filename = 'reports/error_report.csv'  # File to write error report in CSV format
     non_matching_report_filename = 'reports/non_matching_report.csv'  # File to write non-matching report in CSV format
