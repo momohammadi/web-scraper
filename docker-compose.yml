@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: scraber:latest
+    volumes:
+      - ./reports:/app/reports
+      - ./sources:/app/sources
+    environment:
+      PYTHONUNBUFFERED: '1'
