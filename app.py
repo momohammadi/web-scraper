@@ -21,7 +21,8 @@ async def check_url(session, url, progress_bar):
                     return url, line_number, tag.parent.name, element.prettify()
     except Exception as e:
         print(f"Error accessing URL {url}: {e}")
-    progress_bar.update(1)
+    finally:
+        progress_bar.update(1)
     return None
 
 # Read URLs from the input file
@@ -48,7 +49,7 @@ async def main():
 
     async with aiohttp.ClientSession() as session:
         total_urls = len(urls)
-        overall_progress_bar = tqdm(total=total_urls, desc="Overall Progress")
+        overall_progress_bar = tqdm(total=total_urls, desc="Overall Progress", position=0)
         
         for url in urls:
             url = url.strip()
