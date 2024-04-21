@@ -3,11 +3,12 @@ import aiohttp
 import re
 import csv
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 SEARCH_STRING = 'israel'
 
 # Function to check if the given URL contains the searched string (case-insensitive)
-async def check_url(session, url):
+async def check_url(session, url, progress_bar):
     try:
         async with session.get(url) as response:
             if response.status == 200:
@@ -16,9 +17,11 @@ async def check_url(session, url):
                 for tag in soup.find_all(string=re.compile(re.escape(SEARCH_STRING), re.IGNORECASE)):
                     element = tag.find_parent()
                     line_number = html_content.count('\n', 0, html_content.find(str(tag))) + 1
+                    progress_bar.update(1)
                     return url, line_number, tag.parent.name, element.prettify()
     except Exception as e:
         print(f"Error accessing URL {url}: {e}")
+    progress_bar.update(1)
     return None
 
 # Read URLs from the input file
@@ -44,12 +47,19 @@ async def main():
     matching_urls = []
 
     async with aiohttp.ClientSession() as session:
-        tasks = [check_url(session, url.strip()) for url in urls]
-        results = await asyncio.gather(*tasks)
+        total_urls = len(urls)
+        overall_progress_bar = tqdm(total=total_urls, desc="Overall Progress")
+        
+        for url in urls:
+            url = url.strip()
+            individual_progress_bar = tqdm(total=1, desc=f"Checking {url}", position=1, leave=False)
+            result = await check_url(session, url, individual_progress_bar)
+            if result:
+                matching_urls.append(result)
+            overall_progress_bar.update(1)
+            individual_progress_bar.close()
 
-    for result in results:
-        if result:
-            matching_urls.append(result)
+        overall_progress_bar.close()
 
     write_report(report_filename, matching_urls)
     print("Report generated successfully.")
