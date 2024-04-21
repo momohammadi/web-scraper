@@ -7,19 +7,22 @@ Author: Morteza Saeed Mohammadi
 Email: m.mohammadi721@gmail.com
 Date: April 2024
 """
+
 import asyncio
 import aiohttp
 import re
 import csv
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-import time
+import os
 
 SEARCH_STRING = 'ded9.com'
 TIMEOUT = 10  # Timeout value in seconds
 
 # Function to read URLs from the input file
 def read_urls_from_file(filename):
+    if not os.path.isfile(filename):
+        raise FileNotFoundError(f"The input file '{filename}' does not exist.")
     with open(filename, 'r') as file:
         return file.readlines()
 
@@ -44,9 +47,15 @@ async def check_url(session, url, progress_bar, non_matching_urls):
         print(f"\rError accessing URL {url}: {e}", end='')
         return url, f"Error: {e}", ''
 
+# Function to ensure the 'reports' directory exists
+def ensure_reports_directory_exists():
+    if not os.path.isdir('reports'):
+        raise FileNotFoundError("The 'reports' directory does not exist.")
+
 # Write matching URLs to the success report file in CSV format
 def write_success_report(success_report_filename, matching_urls):
     try:
+        ensure_reports_directory_exists()
         with open(success_report_filename, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['link', 'line', 'element', 'html']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -60,6 +69,7 @@ def write_success_report(success_report_filename, matching_urls):
 # Write error URLs to the error report file in CSV format
 def write_error_report(error_report_filename, error_urls):
     try:
+        ensure_reports_directory_exists()
         with open(error_report_filename, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['link', 'error']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -73,6 +83,7 @@ def write_error_report(error_report_filename, error_urls):
 # Write non-matching URLs to the non-matching report file in CSV format
 def write_non_matching_report(non_matching_report_filename, non_matching_urls):
     try:
+        ensure_reports_directory_exists()
         with open(non_matching_report_filename, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['link']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -89,7 +100,13 @@ async def main():
     error_report_filename = 'reports/error_report.csv'  # File to write error report in CSV format
     non_matching_report_filename = 'reports/non_matching_report.csv'  # File to write non-matching report in CSV format
 
-    urls = read_urls_from_file(input_filename)
+    try:
+        ensure_reports_directory_exists()
+        urls = read_urls_from_file(input_filename)
+    except FileNotFoundError as e:
+        print(e)
+        return
+
     matching_urls = []
     error_urls = []
     non_matching_urls = []
