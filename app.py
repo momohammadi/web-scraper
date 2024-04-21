@@ -1,3 +1,12 @@
+"""
+Web Scraper Script
+
+This script allows you to scrape web pages for content matching a specific search string.
+
+Author: Morteza Saeed Mohammadi
+Email: m.mohammadi721@gmail.com
+Date: April 2024
+"""
 import asyncio
 import aiohttp
 import re
