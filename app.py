@@ -5,7 +5,7 @@ import csv
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-SEARCH_STRING = 'israel'
+SEARCH_STRING = 'ded9.com'
 
 # Function to check if the given URL contains the searched string (case-insensitive)
 async def check_url(session, url, progress_bar):
