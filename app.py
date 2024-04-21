@@ -40,7 +40,7 @@ def write_report(report_filename, matching_urls):
             writer.writerow({'link': url.strip(), 'line': line, 'element': element, 'HTML': html.strip()})
 
 async def main():
-    input_filename = 'input.txt'  # File containing URLs, one per line
+    input_filename = 'list_links.txt'  # File containing URLs, one per line
     report_filename = 'report.csv'  # File to write matching URLs in CSV format
 
     urls = read_urls_from_file(input_filename)
