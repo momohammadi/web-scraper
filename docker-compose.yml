@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   scraper:
     build:
@@ -10,4 +8,4 @@ services:
       - ./reports:/app/reports
       - ./sources:/app/sources
     env_file:
-      - .env    
+      - .env
