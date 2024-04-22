@@ -1,4 +1,5 @@
 OPTION=def
+SOURCE_FILE=sources/list_links.txt
 FIRST_FILE=sources/first.txt
 SECOND_FILE=sources/second.txt
 SEARCH_STRING=searchString
