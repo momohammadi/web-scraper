@@ -1,3 +1,4 @@
 reports/*
 sources/*
 venv_name/*
+.env

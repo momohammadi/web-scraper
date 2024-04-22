@@ -5,9 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: scraber:latest
+    image: scraper:latest
     volumes:
       - ./reports:/app/reports
       - ./sources:/app/sources
-    environment:
-      PYTHONUNBUFFERED: '1'
+    env_file:
+      - .env    
