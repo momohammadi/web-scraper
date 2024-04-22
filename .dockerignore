@@ -1,0 +1,6 @@
+reports/
+sources/
+venv_name/
+.git/
+.gitignore
+README.md
