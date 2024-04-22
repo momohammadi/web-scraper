@@ -30,8 +30,24 @@ TIMEOUT = 10  # Timeout value in seconds
 def read_urls_from_file(filename):
     if not os.path.isfile(filename):
         raise FileNotFoundError(f"The input file '{filename}' does not exist.")
+
+    urls = []
     with open(filename, 'r') as file:
-        return file.readlines()
+        if filename.endswith('.txt'):
+            # Read links from TXT file (one per line)
+            urls.extend(file.readlines())
+        elif filename.endswith('.csv'):
+            # Read links from CSV file (from specified header)
+            reader = csv.DictReader(file)
+            for row in reader:
+                if 'link' in row:
+                    urls.append(row['link'])
+                else:
+                    raise ValueError("CSV file must contain a 'link' header.")
+        else:
+            raise ValueError("Unsupported file format. Only TXT and CSV files are supported.")
+
+    return urls
 
 # Function to check if the given URL contains the searched string (case-insensitive)
 async def check_url(session, url, progress_bar, non_matching_urls):
