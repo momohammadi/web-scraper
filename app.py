@@ -5,6 +5,7 @@ This script allows you to scrape web pages for content matching a specific searc
 
 Author: Morteza Saeed Mohammadi
 Email: m.mohammadi721@gmail.com
+GitHub: https://github.com/momohammadi/
 Date: April 2024
 """
 
@@ -18,9 +19,11 @@ import os
 import argparse
 from urllib.parse import urlparse
 
+first_file = os.environ.get('FIRST_FILE')
+first_file = os.environ.get('SECOND_FILE')
 
 
-SEARCH_STRING = 'ded9.com'
+SEARCH_STRING = 'stringToSearch' # Set Your string to search for in the web links
 TIMEOUT = 10  # Timeout value in seconds
 
 # Function to read URLs from the input file
@@ -124,10 +127,15 @@ def write_difference_to_file(difference, output_file):
 
 async def main():
     parser = argparse.ArgumentParser(description='Web Scraper and Domain Difference Finder')
-    parser.add_argument('option', choices=['srap', 'def'], help='Specify whether to perform web scraping (srap) or domain difference finding (def)')
-    parser.add_argument('--first_file', help='Path to the second file for def option')
-    parser.add_argument('--second_file', help='Path to the second file for def option')
-
+    parser.add_argument('option', choices=['srap', 'def'], nargs='?', help='Specify whether to perform web scraping (srap) or domain difference finding (def)')
+    parser.add_argument('--first_file', nargs='?', help='Path to the second file for def option')
+    parser.add_argument('--second_file', nargs='?', help='Path to the second file for def option')
+    # Set default values based on environment variables
+    parser.set_defaults(
+        option=os.environ.get('OPTION', 'srap'),
+        first_file=os.environ.get('FIRST_FILE', ''),
+        second_file=os.environ.get('SECOND_FILE', '')
+    )
     args = parser.parse_args()
     if args.option == 'srap':
       input_filename = 'sources/list_links.txt'  # File containing URLs, one per line
