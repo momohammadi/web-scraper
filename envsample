@@ -1,0 +1,4 @@
+OPTION=def
+FIRST_FILE=sources/first.txt
+SECOND_FILE=sources/second.txt
+PYTHONUNBUFFERED=1
