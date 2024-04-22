@@ -19,23 +19,6 @@ import os
 import argparse
 from urllib.parse import urlparse
 
-first_file = os.environ.get('FIRST_FILE')
-first_file = os.environ.get('SECOND_FILE')
-
-
-# Default search string
-DEFAULT_SEARCH_STRING = 'stringToSearch'
-
-# Read search string from environment variable, or use default value
-SEARCH_STRING = os.environ.get('SEARCH_STRING', DEFAULT_SEARCH_STRING)
-
-# Default search string
-DEFAULT_TIMEOUT = '10'
-
-# Read search string from environment variable, or use default value
-TIMEOUT = os.environ.get('TIMEOUT', DEFAULT_SEARCH_STRING)
-
-
 # Function to read URLs from the input file
 def read_urls_from_file(filename):
     if not os.path.isfile(filename):
@@ -60,13 +43,13 @@ def read_urls_from_file(filename):
     return urls
 
 # Function to check if the given URL contains the searched string (case-insensitive)
-async def check_url(session, url, progress_bar, non_matching_urls):
+async def check_url(session, url, progress_bar, non_matching_urls,search_string,timeout):
     try:
-        async with session.get(url, timeout=TIMEOUT, allow_redirects=True) as response:
+        async with session.get(url, timeout=timeout, allow_redirects=True) as response:
             if response.status == 200:
                 html_content = await response.text()
                 soup = BeautifulSoup(html_content, 'html.parser')
-                for tag in soup.find_all(string=re.compile(re.escape(SEARCH_STRING), re.IGNORECASE)):
+                for tag in soup.find_all(string=re.compile(re.escape(search_string), re.IGNORECASE)):
                     element = tag.find_parent()
                     line_number = html_content.count('\n', 0, html_content.find(str(tag))) + 1
                     return url, line_number, tag.parent.name, str(element)
@@ -154,13 +137,18 @@ def write_difference_to_file(difference, output_file):
 async def main():
     parser = argparse.ArgumentParser(description='Web Scraper and Domain Difference Finder')
     parser.add_argument('option', choices=['srap', 'def'], nargs='?', help='Specify whether to perform web scraping (srap) or domain difference finding (def)')
+    parser.add_argument('--search_string', nargs='?', help='String for search in web links')
     parser.add_argument('--first_file', nargs='?', help='Path to the second file for def option')
     parser.add_argument('--second_file', nargs='?', help='Path to the second file for def option')
+    parser.add_argument('--timeout', type=int ,nargs='?', help='Timeout in second for scrap web link')
+
     # Set default values based on environment variables
     parser.set_defaults(
         option=os.environ.get('OPTION', 'srap'),
         first_file=os.environ.get('FIRST_FILE', ''),
-        second_file=os.environ.get('SECOND_FILE', '')
+        second_file=os.environ.get('SECOND_FILE', ''),
+        search_string=os.environ.get('SEARCH_STRING', ''),
+        timeout=int(os.environ.get('TIMEOUT', '')) if os.environ.get('TIMEOUT', '') else None
     )
     args = parser.parse_args()
     if args.option == 'srap':
@@ -186,7 +174,7 @@ async def main():
               for url in urls:
                   url = url.strip()
                   with tqdm(desc=f"Checking {url}", position=1, leave=False) as progress_bar:
-                      result = await check_url(session, url, progress_bar, non_matching_urls)
+                      result = await check_url(session, url, progress_bar, non_matching_urls,args.search_string,args.timeout)
                       if result:
                           if len(result) == 4:
                               matching_urls.append(result)  # Exclude elapsed_time for success report
