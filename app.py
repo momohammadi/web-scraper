@@ -69,10 +69,10 @@ def ensure_reports_directory_exists():
         raise FileNotFoundError("The 'reports' directory does not exist.")
 
 # Write matching URLs to the success report file in CSV format
-def write_success_report(success_report_filename, matching_urls):
+def write_match_report(match_report_filename, matching_urls):
     try:
         ensure_reports_directory_exists()
-        with open(success_report_filename, 'w', newline='', encoding='utf-8') as csvfile:
+        with open(match_report_filename, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['link', 'line', 'element', 'html']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
@@ -155,7 +155,7 @@ async def main():
     args = parser.parse_args()
     if args.option == 'scrap':
       source_file = args.source_file  # File containing URLs, one per line
-      success_report_filename = 'reports/success_report.csv'  # File to write success report in CSV format
+      match_report_filename = 'reports/match_report.csv'  # File to write success report in CSV format
       error_report_filename = 'reports/error_report.csv'  # File to write error report in CSV format
       non_matching_report_filename = 'reports/non_matching_report.csv'  # File to write non-matching report in CSV format
 
@@ -184,7 +184,7 @@ async def main():
                               error_urls.append(result)
                   overall_progress_bar.update(1)
 
-      write_success_report(success_report_filename, matching_urls)
+      write_match_report(match_report_filename, matching_urls)
       write_error_report(error_report_filename, error_urls)
       write_non_matching_report(non_matching_report_filename, non_matching_urls)
       print("Reports generated successfully.")
