@@ -23,8 +23,18 @@ first_file = os.environ.get('FIRST_FILE')
 first_file = os.environ.get('SECOND_FILE')
 
 
-SEARCH_STRING = 'stringToSearch' # Set Your string to search for in the web links
-TIMEOUT = 10  # Timeout value in seconds
+# Default search string
+DEFAULT_SEARCH_STRING = 'stringToSearch'
+
+# Read search string from environment variable, or use default value
+SEARCH_STRING = os.environ.get('SEARCH_STRING', DEFAULT_SEARCH_STRING)
+
+# Default search string
+DEFAULT_TIMEOUT = '10'
+
+# Read search string from environment variable, or use default value
+TIMEOUT = os.environ.get('TIMEOUT', DEFAULT_SEARCH_STRING)
+
 
 # Function to read URLs from the input file
 def read_urls_from_file(filename):

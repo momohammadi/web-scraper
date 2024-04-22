@@ -1,4 +1,6 @@
 OPTION=def
 FIRST_FILE=sources/first.txt
 SECOND_FILE=sources/second.txt
+SEARCH_STRING=searchString
+TIMEOUT=10
 PYTHONUNBUFFERED=1
