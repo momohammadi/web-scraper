@@ -136,30 +136,32 @@ def write_difference_to_file(difference, output_file):
 
 async def main():
     parser = argparse.ArgumentParser(description='Web Scraper and Domain Difference Finder')
-    parser.add_argument('option', choices=['srap', 'def'], nargs='?', help='Specify whether to perform web scraping (srap) or domain difference finding (def)')
+    parser.add_argument('option', choices=['scrap', 'def'], nargs='?', help='Specify whether to perform web scraping (scrap) or domain difference finding (def)')
     parser.add_argument('--search_string', nargs='?', help='String for search in web links')
+    parser.add_argument('--source_file', nargs='?', help='Path to the source file for web scraping option')
     parser.add_argument('--first_file', nargs='?', help='Path to the second file for def option')
     parser.add_argument('--second_file', nargs='?', help='Path to the second file for def option')
     parser.add_argument('--timeout', type=int ,nargs='?', help='Timeout in second for scrap web link')
 
     # Set default values based on environment variables
     parser.set_defaults(
-        option=os.environ.get('OPTION', 'srap'),
+        option=os.environ.get('OPTION', 'scrap'),
+        source_file=os.environ.get('SOURCE_FILE', ''),
         first_file=os.environ.get('FIRST_FILE', ''),
         second_file=os.environ.get('SECOND_FILE', ''),
         search_string=os.environ.get('SEARCH_STRING', ''),
         timeout=int(os.environ.get('TIMEOUT', '')) if os.environ.get('TIMEOUT', '') else None
     )
     args = parser.parse_args()
-    if args.option == 'srap':
-      input_filename = 'sources/list_links.txt'  # File containing URLs, one per line
+    if args.option == 'scrap':
+      source_file = args.source_file  # File containing URLs, one per line
       success_report_filename = 'reports/success_report.csv'  # File to write success report in CSV format
       error_report_filename = 'reports/error_report.csv'  # File to write error report in CSV format
       non_matching_report_filename = 'reports/non_matching_report.csv'  # File to write non-matching report in CSV format
 
       try:
           ensure_reports_directory_exists()
-          urls = read_urls_from_file(input_filename)
+          urls = read_urls_from_file(source_file)
       except FileNotFoundError as e:
           print(e)
           return
@@ -201,7 +203,7 @@ async def main():
       else:
           print("No difference found between domain lists.")
     else:
-        print("Invalid option. Use 'srap' or 'def'.")
+        print("Invalid option. Use 'scrap' or 'def'.")
 
 if __name__ == "__main__":
     asyncio.run(main())
